@@ -653,7 +653,7 @@ def handle_multiple_instances():
         )
 
         if rep:
-            hwnd = win32gui.FindWindow(None, "DOFRAME v1.3.1")
+            hwnd = win32gui.FindWindow(None, "DOFRAME")
             if hwnd:
                 _, pid = win32process.GetWindowThreadProcessId(hwnd)
                 try:

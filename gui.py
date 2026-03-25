@@ -158,7 +158,7 @@ class FloatingToolbar:
         title_frame.bind("<B1-Motion>", self.do_move)
         title_frame.bind("<ButtonRelease-1>", self.stop_move) 
         
-        tk_lbl = tk.Label(title_frame, text="≡ DOFRAME v1.3.1 ≡", bg="#c0392b", fg="white", font=("Arial", 8, "bold"))
+        tk_lbl = tk.Label(title_frame, text="≡ Doframe ≡", bg="#c0392b", fg="white", font=("Arial", 8, "bold"))
         tk_lbl.pack(pady=2)
         tk_lbl.bind("<Button-1>", self.start_move)
         tk_lbl.bind("<B1-Motion>", self.do_move)
@@ -248,7 +248,7 @@ class OrganizerGUI:
     def __init__(self, app_controller):
         self.app = app_controller
         self.root = ctk.CTk()
-        self.root.title("DOFRAME v1.3.1")
+        self.root.title("Doframe")
         
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
@@ -286,7 +286,7 @@ class OrganizerGUI:
         self.header_f = ctk.CTkFrame(self.root, fg_color="transparent")
         self.header_f.pack(fill="x", padx=15, pady=(15, 5))
         
-        ctk.CTkLabel(self.header_f, text="DOFRAME v1.3.1", font=ctk.CTkFont(size=20, weight="bold")).pack(side="left")
+        ctk.CTkLabel(self.header_f, text="Doframe", font=ctk.CTkFont(size=20, weight="bold")).pack(side="left")
         
         self.btn_settings = ctk.CTkButton(self.header_f, text="⚙️ Paramètres", fg_color="#34495e", hover_color="#2c3e50", width=120, command=self.open_settings)
         self.btn_settings.pack(side="right")
@@ -461,11 +461,11 @@ class OrganizerGUI:
             self.app.config.save()
             
         rep = messagebox.askyesno(
-            "Tutoriel Vidéo",
-            "Voulez-vous ouvrir la vidéo de présentation sur YouTube dans votre navigateur web ?"
+            "Pas de tutoriel intégré pour le moment",
+            "Le créateur de Doframe s'est fait shutdown par Ankama, mais aussi sa vidéo, donc pour le moment il n'y pas de tutoriel."
         )
         if rep:
-            webbrowser.open("https://www.youtube.com/watch?v=0LN6FjymA0A&t=607s")
+            webbrowser.open("https://buymeacoffee.com/luframe")
 
     def open_bind_manager(self):
         """ Ouvre la fenêtre de gestion avancée des binds """
