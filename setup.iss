@@ -5,7 +5,7 @@
 ; ============================================================
 
 #define AppName      "Doframe"
-#define AppVersion   "1.3.1"
+#define AppVersion   "1.3.2"
 #define AppPublisher "DOFRAME"
 #define AppExeName   "Doframe.exe"
 #define SourceDir    "dist"
