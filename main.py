@@ -431,7 +431,7 @@ class OrganizerApp:
         if new_idx != -1:
             self.current_idx = new_idx
 
-    def register_action(self, hk_str, func):
+    def register_action(self, hk_str, func, dofus_only=False):
         if not hk_str:
             return
         parts = hk_str.lower().split("+")
@@ -453,7 +453,11 @@ class OrganizerApp:
                 except:
                     pass
         if main_scan is not None:
-            self.hotkey_actions[(frozenset(mods), main_scan)] = func
+            key = (frozenset(mods), main_scan)
+            if dofus_only:
+                self.dofus_only_actions[key] = func
+            else:
+                self.hotkey_actions[key] = func
 
     def release_modifiers(self):
 
@@ -461,9 +465,6 @@ class OrganizerApp:
             win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
             win32api.keybd_event(win32con.VK_CONTROL, 0, win32con.KEYEVENTF_KEYUP, 0)
             win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-            win32api.mouse_event(0x0100, 0, 0, 0x0001, 0)
-            win32api.mouse_event(0x0100, 0, 0, 0x0002, 0)
         except:
             pass
 
@@ -495,7 +496,21 @@ class OrganizerApp:
             current_mods.add("shift")
 
         key = (frozenset(current_mods), event.scan_code)
-        if key in self.hotkey_actions:
+
+        if key in self.dofus_only_actions:
+            if not self._is_dofus_focused():
+                return
+            action = self.dofus_only_actions[key]
+
+            def safe_execute_dofus(mods=current_mods, fn=action):
+                self.release_modifiers()
+                fn()
+                time.sleep(0.05)
+                self.restore_modifiers(mods)
+
+            threading.Thread(target=safe_execute_dofus, daemon=True).start()
+
+        elif key in self.hotkey_actions:
 
             def safe_execute(mods=current_mods):
                 self.release_modifiers()
@@ -505,9 +520,14 @@ class OrganizerApp:
 
             threading.Thread(target=safe_execute, daemon=True).start()
 
+    def _is_dofus_focused(self):
+        fg_hwnd = win32gui.GetForegroundWindow()
+        return any(acc["hwnd"] == fg_hwnd for acc in self.logic.all_accounts)
+
     def setup_hotkeys(self):
         keyboard.unhook_all()
         self.hotkey_actions = {}
+        self.dofus_only_actions = {}
         self.mouse_hotkeys = {}
         self.mouse_states = {}
 
@@ -541,12 +561,16 @@ class OrganizerApp:
             if cfg.get("refresh_key"):
                 self.register_action(cfg["refresh_key"], self.refresh)
             if cfg.get("auto_zaap_key"):
-                self.register_action(cfg["auto_zaap_key"], self.logic.execute_auto_zaap)
+                self.register_action(
+                    cfg["auto_zaap_key"], self.logic.execute_auto_zaap,
+                    dofus_only=True,
+                )
             if cfg.get("sort_taskbar_key"):
                 self.register_action(cfg["sort_taskbar_key"], self.logic.sort_taskbar)
             if cfg.get("invite_group_key"):
                 self.register_action(
-                    cfg["invite_group_key"], self.logic.execute_group_invite
+                    cfg["invite_group_key"], self.logic.execute_group_invite,
+                    dofus_only=True,
                 )
             if cfg.get("prev_key"):
                 self.register_action(cfg["prev_key"], self.prev_char)
@@ -555,18 +579,24 @@ class OrganizerApp:
             if cfg.get("leader_key"):
                 self.register_action(cfg["leader_key"], self.focus_leader)
             if cfg.get("sync_key"):
-                self.register_action(cfg["sync_key"], self.logic.sync_click_all)
+                self.register_action(
+                    cfg["sync_key"], self.logic.sync_click_all,
+                    dofus_only=True,
+                )
             if cfg.get("sync_right_key"):
                 self.register_action(
-                    cfg["sync_right_key"], self.logic.sync_right_click_all
+                    cfg["sync_right_key"], self.logic.sync_right_click_all,
+                    dofus_only=True,
                 )
             if cfg.get("treasure_key"):
                 self.register_action(
-                    cfg["treasure_key"], self.logic.execute_treasure_hunt
+                    cfg["treasure_key"], self.logic.execute_treasure_hunt,
+                    dofus_only=True,
                 )
             if cfg.get("swap_xp_drop_key"):
                 self.register_action(
-                    cfg["swap_xp_drop_key"], self.logic.execute_swap_xp_drop
+                    cfg["swap_xp_drop_key"], self.logic.execute_swap_xp_drop,
+                    dofus_only=True,
                 )
             if cfg.get("toggle_app_key"):
                 self.register_action(
