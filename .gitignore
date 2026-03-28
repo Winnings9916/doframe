@@ -3,3 +3,5 @@ settings.json
 build
 dist
 *.spec
+installer_output
+.claude
